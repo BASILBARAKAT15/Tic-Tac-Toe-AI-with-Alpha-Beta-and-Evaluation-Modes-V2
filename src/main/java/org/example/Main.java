@@ -2,190 +2,192 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.imageio.ImageIO;
+import java.io.File;
 
 public class Main {
 
-    private JFrame frame;
-    private JComboBox<String> difficultyBox, evalBox;
-    private JRadioButton xButton, oButton;
-    private ButtonGroup symbolGroup;
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Main().show());
+        SwingUtilities.invokeLater(() -> new Main().createGUI());
     }
 
-    public void show() {
-        frame = new JFrame("Tic-Tac-Toe AI • Welcome");
-        frame.setSize(1000, 650);
-        frame.setMinimumSize(new Dimension(800, 550));
+    private void createGUI() {
+        JFrame frame = new JFrame("Tic-Tac-Toe AI • Welcome");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
+        frame.setSize(1100, 750);
+        frame.setLocationRelativeTo(null);
 
-        // MAIN PANEL WITH GRADIENT BACKGROUND
-        JPanel mainPanel = new JPanel() {
+        JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();  // ← This was missing the 'd'!
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                GradientPaint gradient = new GradientPaint(
-                        0, 0, new Color(20, 30, 70),
-                        0, getHeight(), new Color(5, 10, 35)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                GradientPaint gp = new GradientPaint(0, 0, new Color(10, 20, 60), 0, getHeight(), new Color(5, 10, 40));
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
             }
         };
-        mainPanel.setLayout(null);
-        frame.add(mainPanel);
+        panel.setLayout(null);
+        frame.add(panel);
 
-        // LOGO
-        JLabel imgLabel = new JLabel();
+        // Your Image
+        JLabel imageLabel = new JLabel();
         try {
-            ImageIcon icon = new ImageIcon("C:\\Users\\HP\\Downloads\\tac_tac_toe.png");
-            Image img = icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
-            imgLabel.setIcon(new ImageIcon(img));
+            Image img = ImageIO.read(new File("C:\\Users\\HP\\Downloads\\tac_tac_toe.png"))
+                    .getScaledInstance(320, 320, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img));
         } catch (Exception e) {
-            imgLabel.setText("TIC-TAC-TOE");
-
-            imgLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 48));
-            imgLabel.setForeground(new Color(100, 200, 255));
+            imageLabel.setText("Image Not Found");
+            imageLabel.setForeground(Color.RED);
         }
-        imgLabel.setBounds(80, 80, 220, 220);
-        mainPanel.add(imgLabel);
+        imageLabel.setBounds(70, 80, 320, 320);
+        panel.add(imageLabel);
 
-        // TITLE
-        JLabel titleLbl = new JLabel("<html><center>NEURAL NETWORK<br>TIC-TAC-TOE</center></html>", SwingConstants.CENTER);
-        titleLbl.setFont(new Font("Segoe UI", Font.BOLD, 52));
-        titleLbl.setForeground(new Color(120, 200, 255));
-        titleLbl.setBounds(340, 80, 580, 120);
-        mainPanel.add(titleLbl);
+        // Title & Authors (same as before)
+        JLabel title = new JLabel("<html><center>NEURAL NETWORK<br>& ALPHA-BETA AI</center></html>", JLabel.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 56));
+        title.setForeground(new Color(130, 210, 255));
+        title.setBounds(420, 80, 660, 150);
+        panel.add(title);
 
-        JLabel subtitleLbl = new JLabel("By Basil Barakat & Hosni Badran", SwingConstants.CENTER);
-        subtitleLbl.setFont(new Font("Consolas", Font.PLAIN, 22));
-        subtitleLbl.setForeground(new Color(180, 220, 255));
-        subtitleLbl.setBounds(340, 190, 580, 40);
-        mainPanel.add(subtitleLbl);
+        JLabel a1 = new JLabel("Basil Barakat", JLabel.CENTER);
+        a1.setFont(new Font("Consolas", Font.BOLD, 30));
+        a1.setForeground(new Color(120, 220, 255));
+        a1.setBounds(420, 250, 660, 50);
+        panel.add(a1);
 
-        // SYMBOL SELECTION
-        JPanel symbolPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
+        JLabel a2 = new JLabel("Hosni Badran", JLabel.CENTER);
+        a2.setFont(new Font("Consolas", Font.BOLD, 30));
+        a2.setForeground(new Color(120, 220, 255));
+        a2.setBounds(420, 300, 660, 50);
+        panel.add(a2);
+
+        // Symbol Choice
+        JRadioButton xBtn = new JRadioButton("Play as X (First Move)", true);
+        JRadioButton oBtn = new JRadioButton("Play as O (Second Move)", false);
+        ButtonGroup group = new ButtonGroup();
+        group.add(xBtn); group.add(oBtn);
+        xBtn.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        oBtn.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        xBtn.setForeground(Color.CYAN);
+        oBtn.setForeground(Color.LIGHT_GRAY);
+        xBtn.setOpaque(false); oBtn.setOpaque(false);
+
+        JPanel symbolPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 60, 10));
         symbolPanel.setOpaque(false);
-        symbolPanel.setBounds(300, 280, 600, 70);
+        symbolPanel.add(xBtn); symbolPanel.add(oBtn);
+        symbolPanel.setBounds(420, 380, 660, 70);
+        panel.add(symbolPanel);
 
-        xButton = createRadioButton("Play as X (First)", true);
-        oButton = createRadioButton("Play as O (Second)", false);
+        // Difficulty
+        String[] difficulties = {"Easy", "Normal", "Hard"};
+        JComboBox<String> diffBox = new JComboBox<>(difficulties);
+        diffBox.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        diffBox.setForeground(Color.WHITE);
+        diffBox.setBackground(new Color(35, 45, 85));
+        diffBox.setBorder(BorderFactory.createLineBorder(new Color(100, 160, 255), 3));
+        diffBox.setSelectedIndex(2);
 
-        symbolGroup = new ButtonGroup();
-        symbolGroup.add(xButton);
-        symbolGroup.add(oButton);
-
-        symbolPanel.add(xButton);
-        symbolPanel.add(oButton);
-        mainPanel.add(symbolPanel);
-
-        // DIFFICULTY & EVAL
-        difficultyBox = createComboBox(new String[]{"Easy", "Normal", "Hard", "ML-Powered"});
-        difficultyBox.setSelectedIndex(3);
-        evalBox = createComboBox(new String[]{"Classical Heuristic", "Neural Network"});
+        // Evaluation
+        String[] evals = {"Classical Heuristic", "Neural Network"};
+        JComboBox<String> evalBox = new JComboBox<>(evals);
+        evalBox.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        evalBox.setForeground(Color.WHITE);
+        evalBox.setBackground(new Color(35, 45, 85));
+        evalBox.setBorder(BorderFactory.createLineBorder(new Color(100, 160, 255), 3));
         evalBox.setSelectedIndex(1);
 
-        placeComponent(mainPanel, createLabel("Difficulty Level:"), 380, 370, 200, 40);
-        placeComponent(mainPanel, difficultyBox, 580, 370, 280, 50);
-        placeComponent(mainPanel, createLabel("AI Brain:"), 380, 440, 200, 40);
-        placeComponent(mainPanel, evalBox, 580, 440, 280, 50);
+        panel.add(new JLabel("Difficulty Level:"){{
+            setFont(new Font("Segoe UI", Font.BOLD, 28));
+            setForeground(new Color(160, 210, 255));
+            setBounds(420, 480, 300, 50);
+        }});
+        panel.add(diffBox); diffBox.setBounds(720, 480, 350, 55);
 
-        // LAUNCH BUTTON — GLOWING MASTERPIECE
-        JButton goBtn = new JButton("GO!");
-        styleLaunchButton(goBtn);
-        goBtn.setBounds(400, 530, 300, 70);
-        goBtn.addActionListener(e -> {
-            char playerSymbol = xButton.isSelected() ? 'X' : 'O';
-            String difficulty = (String) difficultyBox.getSelectedItem();
-            String evalFunc = (String) evalBox.getSelectedItem();
+        panel.add(new JLabel("AI Evaluation:"){{
+            setFont(new Font("Segoe UI", Font.BOLD, 28));
+            setForeground(new Color(160, 210, 255));
+            setBounds(420, 560, 300, 50);
+        }});
+        panel.add(evalBox); evalBox.setBounds(720, 560, 350, 55);
 
-            if ("ML-Powered".equals(difficulty)) difficulty = "ML";
-            if ("Neural Network".equals(evalFunc)) evalFunc = "NeuralNet";
+        // Small Elegant Start Button
+        JButton start = new JButton("START GAME");
+        start.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        start.setForeground(Color.WHITE);
+        start.setBackground(new Color(0, 140, 255));
+        start.setFocusPainted(false);
+        start.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        start.setBorder(BorderFactory.createEmptyBorder(12, 35, 12, 35));
+        start.setBounds(480, 650, 240, 60);
+
+        start.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) { start.setBackground(new Color(80, 180, 255)); }
+            public void mouseExited(java.awt.event.MouseEvent e) { start.setBackground(new Color(0, 140, 255)); }
+        });
+
+        start.addActionListener(e -> {
+            char playerSymbol = xBtn.isSelected() ? 'X' : 'O';
+            String difficulty = (String) diffBox.getSelectedItem();
+            String evalMode = evalBox.getSelectedIndex() == 1 ? "NeuralNet" : "Heuristic";
 
             frame.dispose();
-            Game.startTicTacToe(playerSymbol, difficulty, evalFunc);
-        });
-        mainPanel.add(goBtn);
 
-        frame.setLocationRelativeTo(null);
+            // IF NEURAL NETWORK SELECTED → SHOW TRAINING SCREEN FIRST
+            if (evalMode.equals("NeuralNet")) {
+                showTrainingScreen(() -> Game.startGame(playerSymbol, difficulty, evalMode));
+            } else {
+                Game.startGame(playerSymbol, difficulty, evalMode);
+            }
+        });
+
+        panel.add(start);
         frame.setVisible(true);
     }
 
-    private JRadioButton createRadioButton(String text, boolean selected) {
-        JRadioButton btn = new JRadioButton(text, selected);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        btn.setForeground(selected ? new Color(100, 220, 255) : new Color(200, 200, 240));
-        btn.setOpaque(false);
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(100, 150, 255), 3),
-                BorderFactory.createEmptyBorder(12, 30, 12, 30)
-        ));
-        btn.setContentAreaFilled(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return btn;
-    }
+    // BEAUTIFUL TRAINING SCREEN
+    private void showTrainingScreen(Runnable onComplete) {
+        JFrame trainFrame = new JFrame("Training Neural Network...");
+        trainFrame.setSize(700, 400);
+        trainFrame.setLocationRelativeTo(null);
+        trainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        trainFrame.getContentPane().setBackground(new Color(10, 20, 50));
 
-    private JComboBox<String> createComboBox(String[] items) {
-        JComboBox<String> box = new JComboBox<>(items);
-        box.setFont(new Font("Segoe UI", Font.PLAIN, 20));
-        box.setForeground(Color.WHITE);
-        box.setBackground(new Color(40, 50, 90));
-        box.setBorder(BorderFactory.createLineBorder(new Color(100, 150, 255), 2));
-        box.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                          boolean isSelected, boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(
-                        list, value, index, isSelected, cellHasFocus);
-                label.setForeground(Color.WHITE);
-                label.setBackground(isSelected ? new Color(0, 120, 215) : new Color(40, 50, 90));
-                label.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-                return label;
-            }
-        });
-        return box;
-    }
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.setBackground(new Color(10, 20, 50));
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-    private JLabel createLabel(String text) {
-        JLabel lbl = new JLabel(text);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lbl.setForeground(new Color(150, 200, 255));
-        return lbl;
-    }
+        JLabel title = new JLabel("Training AI Brain...", JLabel.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        title.setForeground(new Color(100, 220, 255));
 
-    private void placeComponent(Container container, Component comp, int x, int y, int w, int h) {
-        comp.setBounds(x, y, w, h);
-        container.add(comp);
-    }
+        JLabel status = new JLabel("Loading dataset & training model...", JLabel.CENTER);
+        status.setFont(new Font("Consolas", Font.BOLD, 20));
+        status.setForeground(Color.CYAN);
 
-    private void styleLaunchButton(JButton btn) {
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 34));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(new Color(0, 160, 255));
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(15, 50, 15, 50));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JProgressBar progress = new JProgressBar();
+        progress.setIndeterminate(true);
+        progress.setForeground(new Color(0, 200, 255));
 
-        btn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(new Color(80, 200, 255));
-                btn.setBounds(btn.getX() - 5, btn.getY() - 5, btn.getWidth() + 10, btn.getHeight() + 10);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setBackground(new Color(0, 160, 255));
-                btn.setBounds(btn.getX() + 5, btn.getY() + 5, btn.getWidth() - 10, btn.getHeight() - 10);
-            }
-        });
+        panel.add(title, BorderLayout.NORTH);
+        panel.add(status, BorderLayout.CENTER);
+        panel.add(progress, BorderLayout.SOUTH);
+
+        trainFrame.add(panel);
+        trainFrame.setVisible(true);
+
+        // Simulate training time (2–4 seconds) then open game
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000); // You can remove this if real training is fast
+            } catch (Exception ignored) {}
+            SwingUtilities.invokeLater(() -> {
+                trainFrame.dispose();
+                onComplete.run();
+            });
+        }).start();
     }
 }
